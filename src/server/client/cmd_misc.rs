@@ -7,6 +7,7 @@ const SCE_NP_BASIC_PRESENCE_TITLE_SIZE_MAX: usize = 128;
 const SCE_NP_BASIC_PRESENCE_EXTENDED_STATUS_SIZE_MAX: usize = 192;
 const SCE_NP_BASIC_PRESENCE_COMMENT_SIZE_MAX: usize = 64;
 const SCE_NP_BASIC_MAX_PRESENCE_SIZE: usize = 128;
+const SCE_NP_BASIC_SEND_MESSAGE_MAX_RECIPIENTS: usize = 12;
 
 #[allow(dead_code)]
 #[allow(non_camel_case_types)]
@@ -131,6 +132,10 @@ impl Client {
 
 		let message = &sendmessage_req.message;
 		let npids = &sendmessage_req.npids;
+		if npids.is_empty() || npids.len() > SCE_NP_BASIC_SEND_MESSAGE_MAX_RECIPIENTS {
+			warn!("Requested to send a message to an invalid number of recipients: {}", npids.len());
+			return Ok(ErrorType::InvalidInput);
+		}
 
 		// Get all the IDs
 		let mut ids = HashSet::new();
